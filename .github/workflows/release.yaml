@@ -1,0 +1,36 @@
+name: Release
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  build:
+    name: Build Rust binary
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-unknown-linux-musl
+
+      - name: Install musl-gcc
+        run: |
+          sudo apt-get update
+          sudo apt-get install gcc-aarch64-linux-gnu libc6-dev-i386 musl-tools
+
+      - uses: Swatinem/rust-cache@v2
+      
+      - name: Build release binary
+        run: cargo build --release --target=x86_64-unknown-linux-musl
+
+      - name: Upload binary to release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: target/x86_64-unknown-linux-musl/release/spotify-connect
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
