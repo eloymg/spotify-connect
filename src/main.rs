@@ -61,7 +61,7 @@ struct Args {
     auth_type: AuthType,
 
     /// User name
-    #[clap(short, long, default_value = "default")]
+    #[clap(short, long, default_value = "")]
     user: String,
 }
 
@@ -111,7 +111,12 @@ fn main() {
 
     // Prepare cache
     let mut cache_path = dirs::cache_dir().expect("Impossible to find the user cache directory.");
-    cache_path.push(format!("spotify-connect-{}",args.user));
+    let user= if args.user !=""{
+        format!("-{}",args.user)
+    }else {
+        args.user
+    };
+    cache_path.push(format!("spotify-connect{}",user));
 
     let cache = Cache::new(Some(cache_path.as_path()), None, None, None).unwrap_or_else(|e| {
         panic!(
