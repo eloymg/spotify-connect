@@ -2421,7 +2421,7 @@ dependencies = [
 
 [[package]]
 name = "spotify-connect"
-version = "0.1.1"
+version = "0.2.1"
 dependencies = [
  "clap",
  "dirs",
@@ -2436,7 +2436,7 @@ dependencies = [
 
 [[package]]
 name = "spotify-connect-client"
-version = "0.1.1"
+version = "0.2.1"
 dependencies = [
  "aes 0.6.0",
  "aes-ctr",
