@@ -1,7 +1,7 @@
 use rand::Rng;
 use serde::{Deserialize, Serialize};
-use serde_json::Value;
 use sha1::{Digest, Sha1};
+use std::env;
 
 // see <https://developer.spotify.com/documentation/commercial-hardware/implementation/guides/zeroconf>
 #[derive(Debug, Serialize, Deserialize)]
@@ -67,10 +67,17 @@ pub fn add_user(
     let request = minreq::post(base_url)
         .with_header("Content-Type", "application/x-www-form-urlencoded")
         .with_body(body);
-
+    let proxy_url = env::var("HTTP_PROXY").ok();
+    // Apply proxy only if it exists
+    let request = if let Some(url) = proxy_url {
+        let proxy = minreq::Proxy::new(&url).unwrap();
+        request.with_proxy(proxy)
+    } else {
+        request
+    };
     let response = request.send()?;
 
-    let v: Value = serde_json::from_str(response.as_str()?)?;
+    let v: serde_json::Value = serde_json::from_str(response.as_str()?)?;
 
     match v["statusString"].as_str() {
         Some("ERROR-OK") | Some("OK") => Ok(()),

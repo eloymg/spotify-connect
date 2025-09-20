@@ -59,6 +59,10 @@ struct Args {
     /// The authentication method to use
     #[clap(short, long, arg_enum, default_value_t)]
     auth_type: AuthType,
+
+    /// User name
+    #[clap(short, long, default_value = "default")]
+    user: String,
 }
 
 /// Prompt the user for its Spotify username and password
@@ -107,7 +111,7 @@ fn main() {
 
     // Prepare cache
     let mut cache_path = dirs::cache_dir().expect("Impossible to find the user cache directory.");
-    cache_path.push("spotify-connect");
+    cache_path.push(format!("spotify-connect-{}",args.user));
 
     let cache = Cache::new(Some(cache_path.as_path()), None, None, None).unwrap_or_else(|e| {
         panic!(
